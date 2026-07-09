@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+:root {
+  --color-sand-50: #fdf9f1;
+  --color-sand-100: #f8efdc;
+  --color-sand-200: #f0e0bc;
+  --color-sand-300: #e5c98c;
+  --color-sand-400: #d6ac5c;
+
+  --color-ocean-50: #eef7f7;
+  --color-ocean-100: #d3ebec;
+  --color-ocean-200: #a3d3d6;
+  --color-ocean-300: #63b0b6;
+  --color-ocean-400: #2d8890;
+  --color-ocean-500: #1c6870;
+  --color-ocean-600: #144e56;
+  --color-ocean-700: #0f3a40;
+  --color-ocean-800: #0b282c;
+
+  --color-coral-400: #e8895f;
+  --color-coral-500: #d96a3d;
+  --color-coral-600: #b8532c;
+
+  --color-risk-low: #2f8a56;
+  --color-risk-low-bg: #e7f5ec;
+  --color-risk-elevated: #a37a12;
+  --color-risk-elevated-bg: #fbf1d9;
+  --color-risk-high: #c1571f;
+  --color-risk-high-bg: #fbe7d9;
+  --color-risk-severe: #b3261e;
+  --color-risk-severe-bg: #fce3e1;
+
+  --background: var(--color-sand-50);
+  --foreground: var(--color-ocean-800);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-sand-50: var(--color-sand-50);
+  --color-sand-100: var(--color-sand-100);
+  --color-sand-200: var(--color-sand-200);
+  --color-sand-300: var(--color-sand-300);
+  --color-sand-400: var(--color-sand-400);
+
+  --color-ocean-50: var(--color-ocean-50);
+  --color-ocean-100: var(--color-ocean-100);
+  --color-ocean-200: var(--color-ocean-200);
+  --color-ocean-300: var(--color-ocean-300);
+  --color-ocean-400: var(--color-ocean-400);
+  --color-ocean-500: var(--color-ocean-500);
+  --color-ocean-600: var(--color-ocean-600);
+  --color-ocean-700: var(--color-ocean-700);
+  --color-ocean-800: var(--color-ocean-800);
+
+  --color-coral-400: var(--color-coral-400);
+  --color-coral-500: var(--color-coral-500);
+  --color-coral-600: var(--color-coral-600);
+
+  --color-risk-low: var(--color-risk-low);
+  --color-risk-low-bg: var(--color-risk-low-bg);
+  --color-risk-elevated: var(--color-risk-elevated);
+  --color-risk-elevated-bg: var(--color-risk-elevated-bg);
+  --color-risk-high: var(--color-risk-high);
+  --color-risk-high-bg: var(--color-risk-high-bg);
+  --color-risk-severe: var(--color-risk-severe);
+  --color-risk-severe-bg: var(--color-risk-severe-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--color-ocean-800);
+    --foreground: var(--color-sand-50);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-coral-500);
+  outline-offset: 2px;
+}
+
+.leaflet-container {
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
