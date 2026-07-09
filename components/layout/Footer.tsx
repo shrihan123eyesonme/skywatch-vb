@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function Footer() {
   return (
     <footer className="mt-16 border-t border-ocean-100 bg-sand-100/60 dark:bg-ocean-700/40 dark:border-ocean-600">
@@ -15,7 +17,15 @@ export function Footer() {
           </a>
           .
         </p>
-        <p className="mt-4 text-xs text-ocean-500 dark:text-sand-300">
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+          <Link href="/privacy" className="underline text-ocean-600 dark:text-sand-300">
+            Privacy Policy
+          </Link>
+          <Link href="/terms" className="underline text-ocean-600 dark:text-sand-300">
+            Terms of Service
+          </Link>
+        </div>
+        <p className="mt-4 text-xs text-ocean-600 dark:text-sand-300">
           Flood data from NOAA and the National Weather Service. Built for Virginia Beach, VA.
         </p>
       </div>

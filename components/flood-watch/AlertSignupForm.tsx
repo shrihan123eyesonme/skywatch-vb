@@ -13,6 +13,7 @@ export function AlertSignupForm() {
   const [checkingAuth, setCheckingAuth] = useState(configured);
   const [label, setLabel] = useState("Home");
   const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
   const [channels, setChannels] = useState<{ email: boolean; sms: boolean }>({
     email: true,
     sms: false,
@@ -65,6 +66,10 @@ export function AlertSignupForm() {
       setError("Pick at least one way to be notified.");
       return;
     }
+    if (channels.sms && phone.replace(/\D/g, "").length < 10) {
+      setError("Enter a valid phone number to receive text alerts.");
+      return;
+    }
 
     setSubmitting(true);
     setError(null);
@@ -78,6 +83,17 @@ export function AlertSignupForm() {
 
       const supabase = createClient();
       if (!supabase || !user) return;
+
+      if (channels.sms) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({ phone_number: phone })
+          .eq("id", user.id);
+        if (profileError) {
+          setError(profileError.message);
+          return;
+        }
+      }
 
       const { data: savedAddress, error: addressError } = await supabase
         .from("saved_addresses")
@@ -118,7 +134,7 @@ export function AlertSignupForm() {
   if (success) {
     return (
       <Card>
-        <p className="font-semibold text-risk-low">You&apos;re set up for alerts.</p>
+        <p className="font-semibold text-risk-low dark:text-[#5cc98a]">You&apos;re set up for alerts.</p>
         <p className="mt-1 text-sm text-ocean-600 dark:text-sand-200">
           Manage or turn off alerts anytime from{" "}
           <a href="/account" className="underline">
@@ -178,14 +194,45 @@ export function AlertSignupForm() {
             Text message
           </label>
         </fieldset>
+        {channels.sms && (
+          <div>
+            <label htmlFor="alert-phone" className="text-sm font-medium text-ocean-700 dark:text-sand-100">
+              Phone number
+            </label>
+            <input
+              id="alert-phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-ocean-200 bg-white px-4 py-2 dark:bg-ocean-700 dark:border-ocean-600"
+              placeholder="(757) 555-0100"
+            />
+            <p className="mt-2 text-xs text-ocean-600 dark:text-sand-300">
+              By providing your number, you agree to receive automated flood-risk texts
+              here. Message and data rates may apply, frequency varies with conditions.
+              Reply STOP to cancel anytime.
+            </p>
+          </div>
+        )}
         {error && (
-          <p role="alert" className="text-sm font-medium text-risk-high">
+          <p role="alert" className="text-sm font-medium text-risk-high dark:text-[#e8895f]">
             {error}
           </p>
         )}
         <Button type="submit" disabled={submitting} className="self-start">
           {submitting ? "Saving…" : "Turn on alerts"}
         </Button>
+        <p className="text-xs text-ocean-600 dark:text-sand-300">
+          By continuing you agree to our{" "}
+          <a href="/privacy" className="underline">
+            Privacy Policy
+          </a>{" "}
+          and{" "}
+          <a href="/terms" className="underline">
+            Terms of Service
+          </a>
+          .
+        </p>
       </form>
     </Card>
   );

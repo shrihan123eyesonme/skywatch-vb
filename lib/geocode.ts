@@ -27,7 +27,13 @@ export async function geocodeAddress(query: string): Promise<GeocodeResult | nul
   try {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/search?${params.toString()}`,
-      { headers: { "User-Agent": USER_AGENT } }
+      {
+        headers: { "User-Agent": USER_AGENT },
+        // Addresses don't move — cache identical lookups for a day so repeat
+        // searches (and the alert-check cron re-checking saved addresses)
+        // don't hit Nominatim again, keeping us well inside their usage policy.
+        next: { revalidate: 86_400 },
+      }
     );
     if (!res.ok) return null;
     const data = await res.json();

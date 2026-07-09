@@ -1,0 +1,24 @@
+name: Check flood alerts
+
+# Runs more often than Vercel's free-tier daily cron allows, because flood
+# conditions can change within hours, not days. Requires two repo secrets:
+#   APP_URL     — your deployed site, e.g. https://skywatchvb.vercel.app
+#   CRON_SECRET — must match the CRON_SECRET env var set on Vercel
+#
+# If you're already using Vercel Cron for this (vercel.json), you can disable
+# this workflow instead of running both — it's not harmful (the endpoint
+# skips anyone already notified recently), just redundant.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  check-alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call check-alerts endpoint
+        run: |
+          curl -sf -X GET "${{ secrets.APP_URL }}/api/cron/check-alerts" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

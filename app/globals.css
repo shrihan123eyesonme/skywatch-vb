@@ -20,12 +20,13 @@
   --color-coral-400: #e8895f;
   --color-coral-500: #d96a3d;
   --color-coral-600: #b8532c;
+  --color-coral-700: #9c421f;
 
-  --color-risk-low: #2f8a56;
+  --color-risk-low: #1f5f3a;
   --color-risk-low-bg: #e7f5ec;
-  --color-risk-elevated: #a37a12;
+  --color-risk-elevated: #6b500c;
   --color-risk-elevated-bg: #fbf1d9;
-  --color-risk-high: #c1571f;
+  --color-risk-high: #8f3f17;
   --color-risk-high-bg: #fbe7d9;
   --color-risk-severe: #b3261e;
   --color-risk-severe-bg: #fce3e1;
@@ -59,6 +60,7 @@
   --color-coral-400: var(--color-coral-400);
   --color-coral-500: var(--color-coral-500);
   --color-coral-600: var(--color-coral-600);
+  --color-coral-700: var(--color-coral-700);
 
   --color-risk-low: var(--color-risk-low);
   --color-risk-low-bg: var(--color-risk-low-bg);

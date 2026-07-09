@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LaunchViewInfo } from "@/lib/wallops";
-import { launchesFallback } from "@/data/launches-fallback";
 
 const VISIBILITY_LABEL: Record<LaunchViewInfo["visibility"]["odds"], string> = {
   good: "Good odds tonight",
@@ -13,9 +12,21 @@ const VISIBILITY_LABEL: Record<LaunchViewInfo["visibility"]["odds"], string> = {
 export function LaunchTracker({ info }: { info: LaunchViewInfo }) {
   return (
     <Card>
-      <p className="text-sm font-semibold uppercase tracking-wide text-ocean-500">
-        Watch a Launch From Your Backyard
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-semibold uppercase tracking-wide text-ocean-600 dark:text-ocean-200">
+          Watch a Launch From Your Backyard
+        </p>
+        <span
+          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
+            info.live
+              ? "bg-risk-low-bg text-risk-low"
+              : "bg-sand-100 text-ocean-600 dark:bg-ocean-700 dark:text-sand-200"
+          }`}
+        >
+          <span className={`h-1.5 w-1.5 rounded-full ${info.live ? "bg-risk-low" : "bg-ocean-400"}`} />
+          {info.live ? "Live from NASA today" : "Cached snapshot"}
+        </span>
+      </div>
       {info.nextLaunch ? (
         <>
           <h3 className="mt-2 text-2xl font-bold text-ocean-800 dark:text-sand-50">
@@ -33,7 +44,7 @@ export function LaunchTracker({ info }: { info: LaunchViewInfo }) {
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl bg-sand-100 p-4 dark:bg-ocean-700/60">
-          <p className="text-xs font-semibold uppercase text-ocean-500">Where to look</p>
+          <p className="text-xs font-semibold uppercase text-ocean-600 dark:text-ocean-200">Where to look</p>
           <p className="mt-1 font-semibold text-ocean-800 dark:text-sand-50">
             {info.bearingCompass}, about {info.distanceMiles} miles away
           </p>
@@ -43,7 +54,7 @@ export function LaunchTracker({ info }: { info: LaunchViewInfo }) {
           </p>
         </div>
         <div className="rounded-xl bg-sand-100 p-4 dark:bg-ocean-700/60">
-          <p className="text-xs font-semibold uppercase text-ocean-500">Visibility odds</p>
+          <p className="text-xs font-semibold uppercase text-ocean-600 dark:text-ocean-200">Visibility odds</p>
           <p className="mt-1 font-semibold text-ocean-800 dark:text-sand-50">
             {VISIBILITY_LABEL[info.visibility.odds]}
           </p>
@@ -56,13 +67,18 @@ export function LaunchTracker({ info }: { info: LaunchViewInfo }) {
           Upcoming & recent Wallops missions
         </p>
         <ul className="mt-2 space-y-2">
-          {launchesFallback.map((l) => (
+          {info.upcoming.map((l) => (
             <li key={l.missionName} className="flex flex-wrap items-center gap-2 text-sm">
               <Badge>{l.status}</Badge>
-              <span className="font-medium text-ocean-800 dark:text-sand-50">
+              <a
+                href={l.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-ocean-800 hover:underline dark:text-sand-50"
+              >
                 {l.missionName}
-              </span>
-              <span className="text-ocean-500">— {l.window}</span>
+              </a>
+              <span className="text-ocean-600 dark:text-ocean-200">— {l.window}</span>
             </li>
           ))}
         </ul>
@@ -70,13 +86,14 @@ export function LaunchTracker({ info }: { info: LaunchViewInfo }) {
           href="https://www.nasa.gov/wallops-launch-schedule/"
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-block text-sm font-semibold text-coral-500 hover:underline"
+          className="mt-3 inline-block text-sm font-semibold text-coral-700 dark:text-coral-400 hover:underline"
         >
           See the official NASA Wallops launch schedule →
         </a>
-        <p className="mt-2 text-xs text-ocean-500 dark:text-sand-300">
-          NASA doesn&apos;t publish launch dates more than ~2 months out, and dates
-          change often — this list is a snapshot, always double-check the link above.
+        <p className="mt-2 text-xs text-ocean-600 dark:text-sand-300">
+          {info.live
+            ? "Pulled live from NASA's own schedule page and refreshed daily."
+            : "NASA's page didn't load just now, so this is our last-saved snapshot — always double-check the link above."}
         </p>
       </div>
     </Card>

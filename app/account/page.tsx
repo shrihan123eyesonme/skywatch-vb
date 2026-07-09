@@ -19,6 +19,20 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(configured);
   const [addresses, setAddresses] = useState<SavedAddress[]>([]);
   const [subscriptions, setSubscriptions] = useState<AlertSubscription[]>([]);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  async function loadData(userId: string) {
+    const supabase = createClient();
+    if (!supabase) return;
+    const [{ data: addressRows }, { data: subRows }] = await Promise.all([
+      supabase.from("saved_addresses").select("id, label, address_text").eq("user_id", userId),
+      supabase.from("alert_subscriptions").select("id, channel, active, saved_address_id").eq("user_id", userId),
+    ]);
+    setAddresses(addressRows ?? []);
+    setSubscriptions(subRows ?? []);
+  }
 
   useEffect(() => {
     if (!configured) return;
@@ -27,14 +41,7 @@ export default function AccountPage() {
 
     supabase.auth.getUser().then(async ({ data }) => {
       setUser(data.user ?? null);
-      if (data.user) {
-        const [{ data: addressRows }, { data: subRows }] = await Promise.all([
-          supabase.from("saved_addresses").select("id, label, address_text").eq("user_id", data.user.id),
-          supabase.from("alert_subscriptions").select("id, channel, active, saved_address_id").eq("user_id", data.user.id),
-        ]);
-        setAddresses(addressRows ?? []);
-        setSubscriptions(subRows ?? []);
-      }
+      if (data.user) await loadData(data.user.id);
       setLoading(false);
     });
   }, [configured]);
@@ -80,6 +87,34 @@ export default function AccountPage() {
     router.refresh();
   }
 
+  async function handleRemoveAddress(addressId: string) {
+    const supabase = createClient();
+    if (!supabase || !user) return;
+    await supabase.from("saved_addresses").delete().eq("id", addressId);
+    await loadData(user.id);
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch("/api/account/delete", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setDeleteError(data.error ?? "Couldn't delete your account. Try again.");
+        return;
+      }
+      const supabase = createClient();
+      await supabase?.auth.signOut();
+      router.push("/");
+      router.refresh();
+    } catch {
+      setDeleteError("Something went wrong. Try again in a moment.");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
       <div className="flex items-center justify-between">
@@ -104,12 +139,20 @@ export default function AccountPage() {
               const subs = subscriptions.filter((s) => s.saved_address_id === a.id);
               return (
                 <li key={a.id}>
-                  <Card>
-                    <p className="font-semibold text-ocean-800 dark:text-sand-50">{a.label}</p>
-                    <p className="text-sm text-ocean-600 dark:text-sand-200">{a.address_text}</p>
-                    <p className="mt-1 text-xs text-ocean-500">
-                      Alerts: {subs.length > 0 ? subs.map((s) => s.channel).join(", ") : "none"}
-                    </p>
+                  <Card className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-ocean-800 dark:text-sand-50">{a.label}</p>
+                      <p className="text-sm text-ocean-600 dark:text-sand-200">{a.address_text}</p>
+                      <p className="mt-1 text-xs text-ocean-600 dark:text-ocean-200">
+                        Alerts: {subs.length > 0 ? subs.map((s) => s.channel).join(", ") : "none"}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveAddress(a.id)}
+                      className="shrink-0 text-sm font-medium text-risk-high dark:text-[#e8895f] hover:underline"
+                    >
+                      Remove
+                    </button>
                   </Card>
                 </li>
               );
@@ -120,6 +163,39 @@ export default function AccountPage() {
         <div className="mt-6">
           <AlertSignupForm />
         </div>
+      </div>
+
+      <div className="mt-14 border-t border-ocean-100 pt-6 dark:border-ocean-600">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-risk-high dark:text-[#e8895f]">
+          Danger zone
+        </h2>
+        <p className="mt-2 text-sm text-ocean-600 dark:text-sand-200">
+          Deleting your account permanently removes your saved addresses and alert
+          subscriptions. This can&apos;t be undone.
+        </p>
+        {deleteError && (
+          <p role="alert" className="mt-2 text-sm font-medium text-risk-high dark:text-[#e8895f]">
+            {deleteError}
+          </p>
+        )}
+        {confirmingDelete ? (
+          <div className="mt-3 flex flex-wrap gap-3">
+            <Button variant="secondary" onClick={handleDeleteAccount} disabled={deleting}>
+              {deleting ? "Deleting…" : "Yes, permanently delete my account"}
+            </Button>
+            <Button variant="ghost" onClick={() => setConfirmingDelete(false)}>
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <Button
+            variant="secondary"
+            className="mt-3 !text-risk-high"
+            onClick={() => setConfirmingDelete(true)}
+          >
+            Delete my account
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ export default async function FloodWatchPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-      <p className="text-sm font-semibold uppercase tracking-wide text-ocean-500">
+      <p className="text-sm font-semibold uppercase tracking-wide text-ocean-600 dark:text-ocean-200">
         Flood & Storm Watch
       </p>
       <h1 className="mt-2 max-w-2xl text-3xl font-bold text-ocean-800 dark:text-sand-50 sm:text-4xl">
@@ -58,7 +58,7 @@ export default async function FloodWatchPage() {
         </div>
 
         <Card>
-          <p className="text-sm font-semibold uppercase tracking-wide text-ocean-500">
+          <p className="text-sm font-semibold uppercase tracking-wide text-ocean-600 dark:text-ocean-200">
             Sewells Point tide gauge
           </p>
           {gauge?.observed ? (

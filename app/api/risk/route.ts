@@ -4,8 +4,13 @@ import { getFloodGaugeStatus } from "@/lib/noaa";
 import { getActiveAlerts } from "@/lib/nws";
 import { assessRisk } from "@/lib/risk";
 import { nearestNeighborhood } from "@/data/neighborhoods";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function GET(request: NextRequest) {
+  if (!checkRateLimit(`risk:${getClientIp(request)}`, 20)) {
+    return NextResponse.json({ error: "Too many requests. Try again in a moment." }, { status: 429 });
+  }
+
   const address = request.nextUrl.searchParams.get("address");
   const latParam = request.nextUrl.searchParams.get("lat");
   const lngParam = request.nextUrl.searchParams.get("lng");
@@ -14,7 +19,7 @@ export async function GET(request: NextRequest) {
   let lng: number;
   let displayName: string | null = null;
 
-  if (latParam && lngParam) {
+  if (latParam && lngParam && !isNaN(parseFloat(latParam)) && !isNaN(parseFloat(lngParam))) {
     lat = parseFloat(latParam);
     lng = parseFloat(lngParam);
   } else if (address) {
