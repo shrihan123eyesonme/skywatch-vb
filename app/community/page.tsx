@@ -1,5 +1,8 @@
+import { Suspense } from "react";
 import { LaunchTracker } from "@/components/community/LaunchTracker";
 import { OpportunityDirectory } from "@/components/community/OpportunityDirectory";
+import { CommunityImpact } from "@/components/community/CommunityImpact";
+import { VolunteerBoard } from "@/components/community/VolunteerBoard";
 import { getLaunchViewInfo } from "@/lib/wallops";
 import { opportunities } from "@/data/opportunities";
 
@@ -27,6 +30,12 @@ export default async function CommunityPage() {
       </p>
 
       <div className="mt-8">
+        <Suspense fallback={null}>
+          <CommunityImpact />
+        </Suspense>
+      </div>
+
+      <div className="mt-8">
         <LaunchTracker info={launchInfo} />
       </div>
 
@@ -39,6 +48,15 @@ export default async function CommunityPage() {
         </p>
         <div className="mt-4">
           <OpportunityDirectory opportunities={opportunities} />
+        </div>
+      </div>
+
+      <div className="mt-12">
+        <h2 className="text-xl font-bold text-ocean-800 dark:text-sand-50">
+          Volunteer & mutual aid
+        </h2>
+        <div className="mt-4">
+          <VolunteerBoard />
         </div>
       </div>
     </div>
