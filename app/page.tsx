@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LinkButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { WaveIcon, CompassIcon } from "@/components/ui/icons";
+import { WaveIcon, CompassIcon, ChatIcon, CalendarIcon, HeartHandsIcon } from "@/components/ui/icons";
 import { getFloodGaugeStatus } from "@/lib/noaa";
 import { getLaunchViewInfo } from "@/lib/wallops";
 
@@ -134,7 +134,57 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+        <h2 className="text-2xl font-bold text-ocean-800 dark:text-sand-50">
+          More ways to connect
+        </h2>
+        <p className="mt-1 text-ocean-600 dark:text-sand-200">
+          This is your city, not just a flood dashboard.
+        </p>
+        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+          <Card className="flex flex-col">
+            <ChatIcon className="h-7 w-7 text-ocean-600 dark:text-ocean-200" />
+            <h3 className="mt-3 font-bold text-ocean-800 dark:text-sand-50">
+              Neighborhood Forum
+            </h3>
+            <p className="mt-1 flex-1 text-sm text-ocean-700 dark:text-sand-100">
+              Ask your neighbors, share storm tips, or just find out what&apos;s
+              going on down the street.
+            </p>
+            <LinkButton href="/forum" variant="secondary" className="mt-4 self-start">
+              Join the conversation
+            </LinkButton>
+          </Card>
+          <Card className="flex flex-col">
+            <CalendarIcon className="h-7 w-7 text-ocean-600 dark:text-ocean-200" />
+            <h3 className="mt-3 font-bold text-ocean-800 dark:text-sand-50">
+              Events Calendar
+            </h3>
+            <p className="mt-1 flex-1 text-sm text-ocean-700 dark:text-sand-100">
+              Town halls, meetups, storm-prep sessions — added by the people
+              who live here.
+            </p>
+            <LinkButton href="/events" variant="secondary" className="mt-4 self-start">
+              See what&apos;s on
+            </LinkButton>
+          </Card>
+          <Card className="flex flex-col">
+            <HeartHandsIcon className="h-7 w-7 text-ocean-600 dark:text-ocean-200" />
+            <h3 className="mt-3 font-bold text-ocean-800 dark:text-sand-50">
+              Volunteer & Mutual Aid
+            </h3>
+            <p className="mt-1 flex-1 text-sm text-ocean-700 dark:text-sand-100">
+              Offer help or ask for it — sandbags, storm cleanup, checking on
+              a neighbor who needs it.
+            </p>
+            <LinkButton href="/community#volunteer" variant="secondary" className="mt-4 self-start">
+              Visit the board
+            </LinkButton>
+          </Card>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <Card className="!bg-ocean-500 !text-sand-50 dark:!bg-ocean-600">
           <h2 className="text-xl font-bold">Get flood alerts before the water rises</h2>
           <p className="mt-2 max-w-xl text-ocean-50">

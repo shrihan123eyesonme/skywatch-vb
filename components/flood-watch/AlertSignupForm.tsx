@@ -6,6 +6,7 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ConnectSupabaseBanner } from "@/components/ui/ConnectSupabaseBanner";
+import { nearestNeighborhood } from "@/data/neighborhoods";
 
 export function AlertSignupForm() {
   const configured = isSupabaseConfigured();
@@ -95,6 +96,13 @@ export function AlertSignupForm() {
         }
       }
 
+      const nearest = nearestNeighborhood(geo.lat, geo.lng);
+      const { data: neighborhoodRow } = await supabase
+        .from("neighborhoods")
+        .select("id")
+        .eq("slug", nearest.slug)
+        .maybeSingle();
+
       const { data: savedAddress, error: addressError } = await supabase
         .from("saved_addresses")
         .insert({
@@ -103,6 +111,7 @@ export function AlertSignupForm() {
           address_text: geo.displayName,
           lat: geo.lat,
           lng: geo.lng,
+          neighborhood_id: neighborhoodRow?.id ?? null,
         })
         .select()
         .single();

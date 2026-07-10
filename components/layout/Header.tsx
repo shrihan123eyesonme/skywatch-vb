@@ -8,6 +8,8 @@ import { Logo } from "@/components/ui/Logo";
 const NAV = [
   { href: "/flood-watch", label: "Flood & Storm Watch" },
   { href: "/community", label: "Community" },
+  { href: "/forum", label: "Forum" },
+  { href: "/events", label: "Events" },
   { href: "/account", label: "My Account" },
 ];
 

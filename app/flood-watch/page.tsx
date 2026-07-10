@@ -1,6 +1,7 @@
-import { FloodRiskMap } from "@/components/map/FloodRiskMap";
+import { FloodMapWithReports } from "@/components/flood-watch/FloodMapWithReports";
 import { AddressSearch } from "@/components/flood-watch/AddressSearch";
 import { AlertSignupForm } from "@/components/flood-watch/AlertSignupForm";
+import { FloodReportsPanel } from "@/components/flood-watch/FloodReportsPanel";
 import { Card } from "@/components/ui/Card";
 import { getFloodGaugeStatus, getTidePredictionsToday } from "@/lib/noaa";
 import { getActiveAlerts } from "@/lib/nws";
@@ -53,8 +54,11 @@ export default async function FloodWatchPage() {
             with each neighborhood&apos;s known flood sensitivity.
           </p>
           <div className="mt-4">
-            <FloodRiskMap neighborhoods={neighborhoodRisks} />
+            <FloodMapWithReports neighborhoods={neighborhoodRisks} />
           </div>
+          <p className="mt-2 text-xs text-ocean-500 dark:text-sand-300">
+            Orange dots are flooding reported by neighbors — see below to add one.
+          </p>
         </div>
 
         <Card>
@@ -104,6 +108,19 @@ export default async function FloodWatchPage() {
             </div>
           )}
         </Card>
+      </div>
+
+      <div className="mt-14">
+        <h2 className="text-xl font-bold text-ocean-800 dark:text-sand-50">
+          See flooding? Tell your neighbors
+        </h2>
+        <p className="mt-1 max-w-2xl text-ocean-700 dark:text-sand-100">
+          NOAA and the National Weather Service don&apos;t know about the
+          intersection that always floods before anywhere else does — you do.
+        </p>
+        <div className="mt-4">
+          <FloodReportsPanel />
+        </div>
       </div>
 
       <div className="mt-14">

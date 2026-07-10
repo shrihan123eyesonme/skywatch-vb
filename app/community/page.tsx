@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { LaunchTracker } from "@/components/community/LaunchTracker";
 import { OpportunityDirectory } from "@/components/community/OpportunityDirectory";
 import { CommunityImpact } from "@/components/community/CommunityImpact";
@@ -29,6 +30,21 @@ export default async function CommunityPage() {
         from your backyard.
       </p>
 
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Link
+          href="/forum"
+          className="rounded-full border border-ocean-200 px-4 py-2 text-sm font-medium text-ocean-700 hover:bg-ocean-50 dark:border-ocean-600 dark:text-sand-100 dark:hover:bg-ocean-600"
+        >
+          Neighborhood Forum →
+        </Link>
+        <Link
+          href="/events"
+          className="rounded-full border border-ocean-200 px-4 py-2 text-sm font-medium text-ocean-700 hover:bg-ocean-50 dark:border-ocean-600 dark:text-sand-100 dark:hover:bg-ocean-600"
+        >
+          Events Calendar →
+        </Link>
+      </div>
+
       <div className="mt-8">
         <Suspense fallback={null}>
           <CommunityImpact />
@@ -51,7 +67,7 @@ export default async function CommunityPage() {
         </div>
       </div>
 
-      <div className="mt-12">
+      <div id="volunteer" className="mt-12 scroll-mt-20">
         <h2 className="text-xl font-bold text-ocean-800 dark:text-sand-50">
           Volunteer & mutual aid
         </h2>

@@ -10,6 +10,14 @@ export type NeighborhoodRisk = {
   level: RiskLevel;
 };
 
+export type FloodReportMarker = {
+  id: string;
+  lat: number;
+  lng: number;
+  description: string;
+  reportedAt: string;
+};
+
 const RISK_COLOR: Record<RiskLevel, string> = {
   low: "#2f8a56",
   elevated: "#a37a12",
@@ -26,8 +34,10 @@ const RISK_LABEL: Record<RiskLevel, string> = {
 
 export default function FloodRiskMapInner({
   neighborhoods,
+  reports = [],
 }: {
   neighborhoods: NeighborhoodRisk[];
+  reports?: FloodReportMarker[];
 }) {
   return (
     <MapContainer
@@ -55,6 +65,30 @@ export default function FloodRiskMapInner({
           <Popup>
             <p className="font-semibold">{neighborhood.name}</p>
             <p>{RISK_LABEL[level]}</p>
+          </Popup>
+        </CircleMarker>
+      ))}
+      {reports.map((r) => (
+        <CircleMarker
+          key={r.id}
+          center={[r.lat, r.lng]}
+          radius={6}
+          pathOptions={{
+            color: "#0b282c",
+            fillColor: "#f0a578",
+            fillOpacity: 0.95,
+            weight: 2,
+          }}
+        >
+          <Popup>
+            <p className="font-semibold">Community report</p>
+            <p>{r.description}</p>
+            <p className="mt-1 text-xs opacity-70">
+              {new Date(r.reportedAt).toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+              })}
+            </p>
           </Popup>
         </CircleMarker>
       ))}

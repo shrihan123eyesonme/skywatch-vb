@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { NeighborhoodRisk } from "./FloodRiskMapInner";
+import type { NeighborhoodRisk, FloodReportMarker } from "./FloodRiskMapInner";
 
 const FloodRiskMapInner = dynamic(() => import("./FloodRiskMapInner"), {
   ssr: false,
@@ -12,6 +12,12 @@ const FloodRiskMapInner = dynamic(() => import("./FloodRiskMapInner"), {
   ),
 });
 
-export function FloodRiskMap({ neighborhoods }: { neighborhoods: NeighborhoodRisk[] }) {
-  return <FloodRiskMapInner neighborhoods={neighborhoods} />;
+export function FloodRiskMap({
+  neighborhoods,
+  reports,
+}: {
+  neighborhoods: NeighborhoodRisk[];
+  reports?: FloodReportMarker[];
+}) {
+  return <FloodRiskMapInner neighborhoods={neighborhoods} reports={reports} />;
 }
