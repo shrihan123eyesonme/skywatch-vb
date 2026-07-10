@@ -6,3 +6,9 @@ export const CONTACT_EMAIL =
   process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@skywatchvb.com";
 
 export const LEGAL_LAST_UPDATED = "July 9, 2026";
+
+// Used by sitemap.ts, robots.ts, and Open Graph tags. Set NEXT_PUBLIC_SITE_URL
+// once a custom domain is attached in Vercel — until then this Vercel URL is
+// the real, working address.
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://skywatch-vb.vercel.app";
