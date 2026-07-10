@@ -1,5 +1,6 @@
 import { launchesFallback, wallopsFromVirginiaBeach, LaunchEntry } from "@/data/launches-fallback";
 import { getForecast } from "./nws";
+import { captureError } from "./logger";
 
 export type VisibilityOdds = "good" | "fair" | "poor" | "unknown";
 
@@ -56,7 +57,10 @@ async function fetchLiveLaunchUpdates(): Promise<LaunchEntry[] | null> {
       headers: { "User-Agent": USER_AGENT },
       next: { revalidate: 86_400 },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      captureError("wallops.fetchLiveLaunchUpdates", `nasa.gov responded ${res.status}`);
+      return null;
+    }
     const html = await res.text();
 
     const itemPattern =
@@ -77,8 +81,13 @@ async function fetchLiveLaunchUpdates(): Promise<LaunchEntry[] | null> {
       });
     }
 
-    return entries.length > 0 ? entries : null;
-  } catch {
+    if (entries.length === 0) {
+      captureError("wallops.fetchLiveLaunchUpdates", "Parsed 0 entries — NASA page markup may have changed");
+      return null;
+    }
+    return entries;
+  } catch (err) {
+    captureError("wallops.fetchLiveLaunchUpdates", err);
     return null;
   }
 }

@@ -10,6 +10,8 @@
 // Secondary source: NOAA CO-OPS Tides & Currents station 8638610
 // (Sewells Point), used for the tide prediction chart.
 
+import { captureError } from "./logger";
+
 const NWPS_GAUGE_URL = "https://api.water.noaa.gov/nwps/v1/gauges/SWPV2";
 const COOPS_BASE = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter";
 const COOPS_STATION = "8638610";
@@ -42,7 +44,10 @@ export async function getFloodGaugeStatus(): Promise<FloodGaugeStatus | null> {
       headers: { "User-Agent": USER_AGENT },
       next: { revalidate: 300 },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      captureError("noaa.getFloodGaugeStatus", `NWPS responded ${res.status}`);
+      return null;
+    }
     const data = await res.json();
 
     return {
@@ -68,7 +73,8 @@ export async function getFloodGaugeStatus(): Promise<FloodGaugeStatus | null> {
       },
       stationName: data.name ?? "Sewells Point",
     };
-  } catch {
+  } catch (err) {
+    captureError("noaa.getFloodGaugeStatus", err);
     return null;
   }
 }
@@ -90,7 +96,10 @@ export async function getTidePredictionsToday(): Promise<TidePrediction[] | null
     const res = await fetch(`${COOPS_BASE}?${params.toString()}`, {
       next: { revalidate: 3600 },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      captureError("noaa.getTidePredictionsToday", `CO-OPS responded ${res.status}`);
+      return null;
+    }
     const data = await res.json();
     if (!data.predictions) return null;
     return data.predictions.map((p: { t: string; type: string; v: string }) => ({
@@ -98,7 +107,8 @@ export async function getTidePredictionsToday(): Promise<TidePrediction[] | null
       type: p.type as "H" | "L",
       valueFt: parseFloat(p.v),
     }));
-  } catch {
+  } catch (err) {
+    captureError("noaa.getTidePredictionsToday", err);
     return null;
   }
 }

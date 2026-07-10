@@ -7,6 +7,7 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ConnectSupabaseBanner } from "@/components/ui/ConnectSupabaseBanner";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -45,6 +46,12 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md px-4 py-16 sm:px-6">
       <h1 className="text-2xl font-bold text-ocean-800 dark:text-sand-50">Log in</h1>
       <Card className="mt-6">
+        <OAuthButtons />
+        <div className="my-5 flex items-center gap-3 text-xs font-medium text-ocean-500">
+          <div className="h-px flex-1 bg-ocean-100 dark:bg-ocean-600" />
+          OR
+          <div className="h-px flex-1 bg-ocean-100 dark:bg-ocean-600" />
+        </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label htmlFor="email" className="text-sm font-medium text-ocean-700 dark:text-sand-100">

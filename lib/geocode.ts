@@ -2,6 +2,8 @@
 // only (route handler) — Nominatim's usage policy requires a descriptive
 // User-Agent and no more than ~1 request/second.
 
+import { captureError } from "./logger";
+
 const USER_AGENT = "SkywatchVB/0.1 (community flood safety site)";
 
 // Roughly the City of Virginia Beach bounding box, used to bias/limit results
@@ -35,7 +37,10 @@ export async function geocodeAddress(query: string): Promise<GeocodeResult | nul
         next: { revalidate: 86_400 },
       }
     );
-    if (!res.ok) return null;
+    if (!res.ok) {
+      captureError("geocode.geocodeAddress", `Nominatim responded ${res.status}`);
+      return null;
+    }
     const data = await res.json();
     if (!Array.isArray(data) || data.length === 0) return null;
     const first = data[0];
@@ -44,7 +49,8 @@ export async function geocodeAddress(query: string): Promise<GeocodeResult | nul
       lng: parseFloat(first.lon),
       displayName: first.display_name,
     };
-  } catch {
+  } catch (err) {
+    captureError("geocode.geocodeAddress", err);
     return null;
   }
 }

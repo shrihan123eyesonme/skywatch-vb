@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { CONTACT_EMAIL, LEGAL_LAST_UPDATED } from "@/lib/siteConfig";
 
 export const metadata = { title: "Privacy Policy — Skywatch VB" };
 
@@ -7,8 +8,8 @@ export default function PrivacyPage() {
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <h1 className="text-3xl font-bold text-ocean-800 dark:text-sand-50">Privacy Policy</h1>
       <p className="mt-2 text-sm text-ocean-600 dark:text-ocean-200">
-        Last updated: [DATE] — Draft. Have a local attorney review this before launch;
-        it is not legal advice.
+        Last updated: {LEGAL_LAST_UPDATED} — Draft. Have a local attorney review this
+        before launch; it is not legal advice.
       </p>
 
       <Card className="mt-6 space-y-5 text-ocean-700 dark:text-sand-100">
@@ -69,6 +70,12 @@ export default function PrivacyPage() {
             OpenStreetMap&apos;s Nominatim geocoding service to look up coordinates — we
             don&apos;t send your name or account info with that request.
           </p>
+          <p className="mt-2">
+            If you sign in with Google or Apple instead of a password, that provider
+            shares your name and email with us (via Supabase) so we can create your
+            account — we don&apos;t receive your password or any other data from your
+            Google or Apple account.
+          </p>
         </section>
 
         <section>
@@ -95,7 +102,11 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-lg font-bold text-ocean-800 dark:text-sand-50">Contact</h2>
           <p className="mt-1">
-            Questions about this policy or your data: [CONTACT EMAIL].
+            Questions about this policy or your data:{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="underline">
+              {CONTACT_EMAIL}
+            </a>
+            .
           </p>
         </section>
       </Card>

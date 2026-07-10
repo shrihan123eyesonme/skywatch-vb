@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { CONTACT_EMAIL, LEGAL_LAST_UPDATED } from "@/lib/siteConfig";
 
 export const metadata = { title: "Terms of Service — Skywatch VB" };
 
@@ -7,8 +8,8 @@ export default function TermsPage() {
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <h1 className="text-3xl font-bold text-ocean-800 dark:text-sand-50">Terms of Service</h1>
       <p className="mt-2 text-sm text-ocean-600 dark:text-ocean-200">
-        Last updated: [DATE] — Draft. Have a local attorney review this before launch;
-        it is not legal advice.
+        Last updated: {LEGAL_LAST_UPDATED} — Draft. Have a local attorney review this
+        before launch; it is not legal advice.
       </p>
 
       <Card className="mt-6 space-y-5 text-ocean-700 dark:text-sand-100">
@@ -82,7 +83,13 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-lg font-bold text-ocean-800 dark:text-sand-50">Contact</h2>
-          <p className="mt-1">Questions: [CONTACT EMAIL].</p>
+          <p className="mt-1">
+            Questions:{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="underline">
+              {CONTACT_EMAIL}
+            </a>
+            .
+          </p>
         </section>
       </Card>
     </div>

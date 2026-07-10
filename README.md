@@ -26,10 +26,11 @@ alone:
   hydrologist or emergency manager. It's clearly labeled as an estimate in
   the UI (with an in-app "How we calculate this" explainer), but for
   safety-relevant content, a second set of expert eyes is worth it.
-- **Fill in `app/privacy/page.tsx` and `app/terms/page.tsx`.** Both are real,
-  usable drafts (data collection, SMS/TCPA consent language, liability
-  disclaimers) but have `[DATE]` and `[CONTACT EMAIL]` placeholders and
-  haven't been reviewed by a lawyer.
+- **Have a lawyer glance at `app/privacy/page.tsx` and `app/terms/page.tsx`.**
+  Both are real, usable drafts (data collection, SMS/TCPA consent language,
+  liability disclaimers) with a real contact email pulled from
+  `NEXT_PUBLIC_CONTACT_EMAIL` (see `lib/siteConfig.ts`) — just not
+  attorney-reviewed yet.
 - **Real local photography.** The design brief asked for real Virginia Beach
   photography over stock imagery. We can't source or license photos on your
   behalf, so the site currently uses original illustration (custom SVG waves,
@@ -62,7 +63,31 @@ Without these, alert signups save to the database but nothing gets sent.
 2. Create a [Twilio](https://twilio.com) account, buy a number, set
    `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`.
 
-### 3. The alert-check cron job
+### 3. Google / Apple sign-in
+
+Email/password works out of the box once Supabase is connected. "Continue
+with Google" / "Continue with Apple" buttons are already built
+(`components/auth/OAuthButtons.tsx`) but need the providers turned on in
+Supabase — this is dashboard configuration, not code:
+
+1. In the Supabase dashboard: **Authentication → Providers → Google**, and
+   separately **→ Apple**.
+2. **Google**: create an OAuth Client ID in the
+   [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+   (type "Web application"), add the Callback URL Supabase shows you as an
+   Authorized Redirect URI, paste the Client ID/Secret back into Supabase.
+3. **Apple**: create a Services ID in
+   [Apple Developer](https://developer.apple.com/account/resources/identifiers/list/serviceId)
+   with "Sign in with Apple" enabled, same Callback URL, paste the
+   Services ID / Team ID / Key ID / private key into Supabase.
+4. In Supabase **Authentication → URL Configuration**, add your site URL
+   (and `http://localhost:3000` for local dev) to the allowed redirect URLs
+   — the app's callback route is `/auth/callback`.
+
+Until both are turned on, the buttons will show whatever error Supabase
+returns (e.g. "Unsupported provider") rather than failing silently.
+
+### 4. The alert-check cron job
 
 `GET /api/cron/check-alerts` checks every active subscription against
 current conditions and sends notifications when someone's threshold is
@@ -81,7 +106,17 @@ Two ways to trigger it, and you can use either or both:
   one we'd actually recommend for a safety feature — flood risk shouldn't
   wait a day to notify someone.
 
-### 4. Deploying
+### 5. Monitoring
+
+`GET /api/health` checks NOAA, NWS, and geocoding reachability and reports
+which optional integrations (Supabase, email, SMS) are connected — point a
+free uptime monitor (UptimeRobot, Better Stack) or the same GitHub Actions
+cron at it. Beyond that, every external-API failure is logged as structured
+JSON via `lib/logger.ts`; on Vercel these show up in Runtime Logs
+automatically, no setup needed. To upgrade to Sentry or similar later, the
+only change needed is inside `captureError()` in that one file.
+
+### 6. Deploying
 
 The app is ready for Vercel (`vercel.json` is already set up for the cron
 job). We haven't deployed it for you — `vercel deploy` from this directory

@@ -1,5 +1,7 @@
 // National Weather Service API (api.weather.gov). No API key required.
 
+import { captureError } from "./logger";
+
 const USER_AGENT = "SkywatchVB/0.1 (community flood safety site)";
 
 export type NwsAlert = {
@@ -18,7 +20,10 @@ export async function getActiveAlerts(lat: number, lng: number): Promise<NwsAler
       `https://api.weather.gov/alerts/active?point=${lat},${lng}`,
       { headers: { "User-Agent": USER_AGENT }, next: { revalidate: 300 } }
     );
-    if (!res.ok) return [];
+    if (!res.ok) {
+      captureError("nws.getActiveAlerts", `api.weather.gov responded ${res.status}`);
+      return [];
+    }
     const data = await res.json();
     return (data.features ?? []).map(
       (f: {
@@ -41,7 +46,8 @@ export async function getActiveAlerts(lat: number, lng: number): Promise<NwsAler
         ends: f.properties.ends,
       })
     );
-  } catch {
+  } catch (err) {
+    captureError("nws.getActiveAlerts", err);
     return [];
   }
 }
@@ -62,7 +68,10 @@ export async function getForecast(
       headers: { "User-Agent": USER_AGENT },
       next: { revalidate: 3600 },
     });
-    if (!pointRes.ok) return null;
+    if (!pointRes.ok) {
+      captureError("nws.getForecast", `points lookup responded ${pointRes.status}`);
+      return null;
+    }
     const point = await pointRes.json();
     const forecastUrl = point.properties?.forecast;
     if (!forecastUrl) return null;
@@ -71,7 +80,10 @@ export async function getForecast(
       headers: { "User-Agent": USER_AGENT },
       next: { revalidate: 1800 },
     });
-    if (!forecastRes.ok) return null;
+    if (!forecastRes.ok) {
+      captureError("nws.getForecast", `forecast responded ${forecastRes.status}`);
+      return null;
+    }
     const forecast = await forecastRes.json();
     return (forecast.properties?.periods ?? []).map(
       (p: {
@@ -86,7 +98,8 @@ export async function getForecast(
         isDaytime: p.isDaytime,
       })
     );
-  } catch {
+  } catch (err) {
+    captureError("nws.getForecast", err);
     return null;
   }
 }
