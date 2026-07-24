@@ -1,5 +1,5 @@
 import { FloodCategory, FloodGaugeStatus } from "./noaa";
-import { NwsAlert, isFloodRelevantAlert } from "./nws";
+import { NwsAlert, NwsForecastPeriod, isFloodRelevantAlert } from "./nws";
 import { Neighborhood } from "@/data/neighborhoods";
 
 export type RiskLevel = "low" | "elevated" | "high" | "severe";
@@ -12,6 +12,7 @@ export type RiskAssessment = {
   neighborhood: Neighborhood;
   gauge: FloodGaugeStatus | null;
   activeAlerts: NwsAlert[];
+  rainSignal: { chance: number | null; note: string | null };
 };
 
 const CATEGORY_SCORE: Record<FloodCategory, number> = {
@@ -67,12 +68,47 @@ const LEVEL_COPY: Record<RiskLevel, { headline: string; explanation: string; tip
   },
 };
 
+function assessRainSignal(forecast: NwsForecastPeriod[] | null | undefined): {
+  boost: number;
+  chance: number | null;
+  note: string | null;
+} {
+  if (!forecast || forecast.length === 0) {
+    return { boost: 0, chance: null, note: null };
+  }
+
+  // Look at the next couple of forecast periods (roughly the next 24h) —
+  // heavy near-term rain drives street-level (pluvial) flooding independent
+  // of the tide gauge, which is what the rest of this heuristic is built on.
+  const upcoming = forecast.slice(0, 2);
+  const worst = upcoming.reduce(
+    (max, p) => Math.max(max, p.precipitationChance ?? 0),
+    0
+  );
+  const heavyLanguage = upcoming.some((p) =>
+    /thunderstorm|heavy rain|downpour/i.test(p.shortForecast)
+  );
+
+  let boost = 0;
+  if (worst >= 70 || (heavyLanguage && worst >= 40)) boost = 2;
+  else if (worst >= 40) boost = 1;
+
+  const relevant = upcoming.find((p) => (p.precipitationChance ?? 0) === worst) ?? upcoming[0];
+  const note =
+    worst > 0
+      ? `${relevant.name}: ${relevant.shortForecast} (${worst}% chance of rain)`
+      : null;
+
+  return { boost, chance: worst || null, note };
+}
+
 export function assessRisk(params: {
   neighborhood: Neighborhood;
   gauge: FloodGaugeStatus | null;
   activeAlerts: NwsAlert[];
+  forecast?: NwsForecastPeriod[] | null;
 }): RiskAssessment {
-  const { neighborhood, gauge, activeAlerts } = params;
+  const { neighborhood, gauge, activeAlerts, forecast } = params;
 
   const gaugeCategory: FloodCategory =
     gauge?.forecast?.category ?? gauge?.observed?.category ?? "unknown";
@@ -89,6 +125,9 @@ export function assessRisk(params: {
   const neighborhoodBoost = Math.max(0, Math.min(2, neighborhood.floodSensitivity - 3));
   score += neighborhoodBoost;
 
+  const rain = assessRainSignal(forecast);
+  score += rain.boost;
+
   let level: RiskLevel;
   if (score >= 5) level = "severe";
   else if (score >= 3) level = "high";
@@ -97,13 +136,19 @@ export function assessRisk(params: {
 
   const copy = LEVEL_COPY[level];
 
+  const rainClause =
+    rain.boost > 0 && rain.note
+      ? ` The forecast also shows a real chance of heavy rain (${rain.note}), which can flood streets on its own, separate from the tide.`
+      : "";
+
   return {
     level,
     headline: copy.headline,
-    explanation: `${copy.explanation} This estimate factors in ${neighborhood.name}'s known flood sensitivity.`,
+    explanation: `${copy.explanation} This estimate factors in ${neighborhood.name}'s known flood sensitivity.${rainClause}`,
     tips: copy.tips,
     neighborhood,
     gauge,
     activeAlerts,
+    rainSignal: { chance: rain.chance, note: rain.note },
   };
 }

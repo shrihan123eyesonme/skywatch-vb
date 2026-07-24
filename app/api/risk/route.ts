@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { geocodeAddress } from "@/lib/geocode";
 import { getFloodGaugeStatus } from "@/lib/noaa";
-import { getActiveAlerts } from "@/lib/nws";
+import { getActiveAlerts, getForecast } from "@/lib/nws";
 import { assessRisk } from "@/lib/risk";
 import { nearestNeighborhood } from "@/data/neighborhoods";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
@@ -44,12 +44,13 @@ export async function GET(request: NextRequest) {
   }
 
   const neighborhood = nearestNeighborhood(lat, lng);
-  const [gauge, activeAlerts] = await Promise.all([
+  const [gauge, activeAlerts, forecast] = await Promise.all([
     getFloodGaugeStatus(),
     getActiveAlerts(lat, lng),
+    getForecast(lat, lng),
   ]);
 
-  const assessment = assessRisk({ neighborhood, gauge, activeAlerts });
+  const assessment = assessRisk({ neighborhood, gauge, activeAlerts, forecast });
 
   return NextResponse.json({ ...assessment, lat, lng, displayName });
 }

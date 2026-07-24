@@ -1,7 +1,7 @@
 import { ThreadView } from "@/components/forum/ThreadView";
 
 export const metadata = {
-  title: "Thread — Skywatch VB Forum",
+  title: "Thread",
 };
 
 export default async function ThreadPage({

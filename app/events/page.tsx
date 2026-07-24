@@ -1,7 +1,7 @@
 import { EventsCalendar } from "@/components/events/EventsCalendar";
 
 export const metadata = {
-  title: "Events Calendar — Skywatch VB",
+  title: "Events Calendar",
   description: "Everything happening around Virginia Beach, added by the community.",
 };
 

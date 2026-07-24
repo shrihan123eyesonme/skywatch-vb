@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import { CONTACT_EMAIL, LEGAL_LAST_UPDATED } from "@/lib/siteConfig";
 
-export const metadata = { title: "Privacy Policy — Skywatch VB" };
+export const metadata = { title: "Privacy Policy" };
 
 export default function PrivacyPage() {
   return (

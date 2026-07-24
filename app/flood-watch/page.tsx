@@ -4,26 +4,27 @@ import { AlertSignupForm } from "@/components/flood-watch/AlertSignupForm";
 import { FloodReportsPanel } from "@/components/flood-watch/FloodReportsPanel";
 import { Card } from "@/components/ui/Card";
 import { getFloodGaugeStatus, getTidePredictionsToday } from "@/lib/noaa";
-import { getActiveAlerts } from "@/lib/nws";
+import { getActiveAlerts, getForecast } from "@/lib/nws";
 import { assessRisk } from "@/lib/risk";
 import { neighborhoods } from "@/data/neighborhoods";
 
 export const metadata = {
-  title: "Flood & Storm Watch — Skywatch VB",
+  title: "Flood & Storm Watch",
 };
 
 const VB_CENTER = { lat: 36.8529, lng: -75.978 };
 
 export default async function FloodWatchPage() {
-  const [gauge, activeAlerts, tides] = await Promise.all([
+  const [gauge, activeAlerts, tides, forecast] = await Promise.all([
     getFloodGaugeStatus(),
     getActiveAlerts(VB_CENTER.lat, VB_CENTER.lng),
     getTidePredictionsToday(),
+    getForecast(VB_CENTER.lat, VB_CENTER.lng),
   ]);
 
   const neighborhoodRisks = neighborhoods.map((neighborhood) => ({
     neighborhood,
-    level: assessRisk({ neighborhood, gauge, activeAlerts }).level,
+    level: assessRisk({ neighborhood, gauge, activeAlerts, forecast }).level,
   }));
 
   return (

@@ -8,7 +8,7 @@ import { getLaunchViewInfo } from "@/lib/wallops";
 import { opportunities } from "@/data/opportunities";
 
 export const metadata = {
-  title: "Community — Skywatch VB",
+  title: "Community",
   description:
     "What's happening around Virginia Beach: events, jobs, internships, museum days, and a launch you can watch from your backyard.",
 };

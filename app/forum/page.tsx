@@ -1,7 +1,7 @@
 import { ForumBoard } from "@/components/forum/ForumBoard";
 
 export const metadata = {
-  title: "Neighborhood Forum — Skywatch VB",
+  title: "Neighborhood Forum",
   description: "Talk to your neighbors about flooding, storm prep, and everything else.",
 };
 

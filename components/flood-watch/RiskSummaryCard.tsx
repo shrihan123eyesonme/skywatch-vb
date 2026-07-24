@@ -13,6 +13,7 @@ export type RiskResult = {
   } | null;
   activeAlerts: { event: string; headline: string }[];
   displayName: string | null;
+  rainSignal?: { chance: number | null; note: string | null };
 };
 
 export function RiskSummaryCard({ result }: { result: RiskResult }) {
@@ -38,6 +39,12 @@ export function RiskSummaryCard({ result }: { result: RiskResult }) {
       {result.gauge?.observed && (
         <p className="mt-3 text-sm text-ocean-600 dark:text-sand-300">
           Current water level at Sewells Point: {result.gauge.observed.stageFt.toFixed(1)} ft
+        </p>
+      )}
+
+      {result.rainSignal?.note && (
+        <p className="mt-1 text-sm text-ocean-600 dark:text-sand-300">
+          Rain forecast: {result.rainSignal.note}
         </p>
       )}
 
@@ -80,10 +87,13 @@ export function RiskSummaryCard({ result }: { result: RiskResult }) {
           </p>
           <p>
             We add a point if there&apos;s an active NWS flood or coastal-flood watch
-            for the area, two points for an active warning, and up to two more
-            points based on {result.neighborhood.name}&apos;s known flood
-            sensitivity (built from city stormwater project areas and documented
-            flood history, not a live model of your specific block).
+            for the area, two points for an active warning, up to two more points
+            based on {result.neighborhood.name}&apos;s known flood sensitivity
+            (built from city stormwater project areas and documented flood
+            history, not a live model of your specific block), and one to two
+            points if the near-term NWS forecast shows a strong chance of heavy
+            rain — that kind of rain can flood streets on its own, separate from
+            the tide.
           </p>
           <p>
             This is a simple, transparent scoring rule we built and haven&apos;t had

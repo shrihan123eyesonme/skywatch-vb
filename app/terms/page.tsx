@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import { CONTACT_EMAIL, LEGAL_LAST_UPDATED } from "@/lib/siteConfig";
 
-export const metadata = { title: "Terms of Service — Skywatch VB" };
+export const metadata = { title: "Terms of Service" };
 
 export default function TermsPage() {
   return (

@@ -57,6 +57,7 @@ export type NwsForecastPeriod = {
   shortForecast: string;
   temperature: number;
   isDaytime: boolean;
+  precipitationChance: number | null;
 };
 
 export async function getForecast(
@@ -91,11 +92,13 @@ export async function getForecast(
         shortForecast: string;
         temperature: number;
         isDaytime: boolean;
+        probabilityOfPrecipitation?: { value: number | null };
       }) => ({
         name: p.name,
         shortForecast: p.shortForecast,
         temperature: p.temperature,
         isDaytime: p.isDaytime,
+        precipitationChance: p.probabilityOfPrecipitation?.value ?? null,
       })
     );
   } catch (err) {

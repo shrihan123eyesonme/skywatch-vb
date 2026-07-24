@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient, isAdminConfigured } from "@/lib/supabase/admin";
 import { getFloodGaugeStatus } from "@/lib/noaa";
-import { getActiveAlerts } from "@/lib/nws";
+import { getActiveAlerts, getForecast } from "@/lib/nws";
 import { assessRisk, RiskLevel } from "@/lib/risk";
 import { nearestNeighborhood } from "@/data/neighborhoods";
 import { sendAlertEmail } from "@/lib/notifications/email";
 import { sendAlertSms } from "@/lib/notifications/sms";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // Invoked on a schedule (see vercel.json and .github/workflows) to check every
 // active alert subscription against current conditions and notify anyone
@@ -76,9 +77,10 @@ export async function GET(request: NextRequest) {
   }
   const profileById = new Map((profiles ?? []).map((p) => [p.id, p]));
 
-  const [gauge, activeAlerts] = await Promise.all([
+  const [gauge, activeAlerts, forecast] = await Promise.all([
     getFloodGaugeStatus(),
     getActiveAlerts(36.8529, -75.978),
+    getForecast(36.8529, -75.978),
   ]);
 
   let notified = 0;
@@ -93,7 +95,7 @@ export async function GET(request: NextRequest) {
     }
 
     const neighborhood = nearestNeighborhood(sub.saved_addresses.lat, sub.saved_addresses.lng);
-    const assessment = assessRisk({ neighborhood, gauge, activeAlerts });
+    const assessment = assessRisk({ neighborhood, gauge, activeAlerts, forecast });
 
     const meetsThreshold = RISK_ORDER[assessment.level] >= RISK_ORDER[sub.risk_threshold];
     if (!meetsThreshold) {
@@ -111,7 +113,7 @@ export async function GET(request: NextRequest) {
     }
 
     const subject = `Skywatch VB: ${assessment.headline} near ${sub.saved_addresses.label}`;
-    const body = `${assessment.headline}\n${assessment.explanation}\n\nAddress: ${sub.saved_addresses.address_text}\n\nDetails: https://skywatchvb.example/flood-watch`;
+    const body = `${assessment.headline}\n${assessment.explanation}\n\nAddress: ${sub.saved_addresses.address_text}\n\nDetails: ${SITE_URL}/flood-watch`;
 
     let result: { sent: boolean; error?: string };
     if (sub.channel === "email") {
