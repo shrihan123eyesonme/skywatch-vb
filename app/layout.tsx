@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/layout/Header";
@@ -44,10 +44,27 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fdf9f1" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b282c" },
+  ],
+};
+
+// WebSite structured data so search engines connect the name, URL, and
+// description — the parts of the site's identity that live outside any page.
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Skywatch VB",
+  url: SITE_URL,
+  description: DESCRIPTION,
 };
 
 export default function RootLayout({
@@ -61,12 +78,24 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-ocean-700 focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-sand-50"
+        >
+          Skip to main content
+        </a>
         <Suspense fallback={null}>
           <AlertBanner />
         </Suspense>
         <Header />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">
+          {children}
+        </main>
         <Footer />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        />
       </body>
     </html>
   );

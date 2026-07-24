@@ -1,0 +1,26 @@
+import type { MetadataRoute } from "next";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "Skywatch VB — Virginia Beach flood watch & community hub",
+    short_name: "Skywatch VB",
+    description:
+      "A Virginia Beach community resource: know your flood risk today, and see what's happening around the city.",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#fdf9f1",
+    theme_color: "#1c6870",
+    icons: [
+      {
+        src: "/icon.svg",
+        sizes: "any",
+        type: "image/svg+xml",
+      },
+      {
+        src: "/apple-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  };
+}
