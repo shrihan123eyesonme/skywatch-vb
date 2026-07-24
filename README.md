@@ -63,29 +63,31 @@ Without these, alert signups save to the database but nothing gets sent.
 2. Create a [Twilio](https://twilio.com) account, buy a number, set
    `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`.
 
-### 3. Google / Apple sign-in
+### 3. Google sign-in
 
-Email/password works out of the box once Supabase is connected. "Continue
-with Google" / "Continue with Apple" buttons are already built
-(`components/auth/OAuthButtons.tsx`) but need the providers turned on in
-Supabase — this is dashboard configuration, not code:
+Email/password works out of the box once Supabase is connected. A "Continue
+with Google" button is already built (`components/auth/OAuthButtons.tsx`)
+but needs the provider turned on in Supabase — this is dashboard
+configuration, not code:
 
-1. In the Supabase dashboard: **Authentication → Providers → Google**, and
-   separately **→ Apple**.
-2. **Google**: create an OAuth Client ID in the
+1. In the Supabase dashboard: **Authentication → Providers → Google**.
+2. Create an OAuth Client ID in the
    [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
    (type "Web application"), add the Callback URL Supabase shows you as an
    Authorized Redirect URI, paste the Client ID/Secret back into Supabase.
-3. **Apple**: create a Services ID in
-   [Apple Developer](https://developer.apple.com/account/resources/identifiers/list/serviceId)
-   with "Sign in with Apple" enabled, same Callback URL, paste the
-   Services ID / Team ID / Key ID / private key into Supabase.
+3. Publish the Google OAuth consent screen (Google Auth Platform → Audience
+   → Publish App) — otherwise only accounts added as test users can sign in.
 4. In Supabase **Authentication → URL Configuration**, add your site URL
    (and `http://localhost:3000` for local dev) to the allowed redirect URLs
    — the app's callback route is `/auth/callback`.
 
-Until both are turned on, the buttons will show whatever error Supabase
-returns (e.g. "Unsupported provider") rather than failing silently.
+Until it's turned on, the button will show whatever error Supabase returns
+(e.g. "Unsupported provider") rather than failing silently.
+
+Apple sign-in was deliberately left out — it requires a paid ($99/year)
+Apple Developer account. The OAuth flow in `OAuthButtons.tsx` is provider-
+agnostic, so adding Apple (or any other Supabase-supported provider) later
+is just adding it back to the `PROVIDERS` list.
 
 ### 4. The alert-check cron job
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-type Provider = "google" | "apple";
+type Provider = "google";
 
 function GoogleIcon() {
   return (
@@ -28,17 +28,12 @@ function GoogleIcon() {
   );
 }
 
-function AppleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden fill="currentColor">
-      <path d="M16.365 1.43c0 1.14-.42 2.13-1.26 2.97-.9.9-2 1.42-3.16 1.33-.13-1.1.42-2.24 1.24-3.03.87-.87 2.11-1.46 3.18-1.27zm3.6 16.83c-.5 1.15-.74 1.66-1.38 2.68-.9 1.42-2.17 3.2-3.75 3.21-1.4.02-1.76-.9-3.65-.89-1.89.01-2.29.9-3.7.88-1.57-.02-2.77-1.62-3.67-3.03C1.09 17.3.28 12.94 1.6 10.02c.75-1.65 2.13-2.7 3.7-2.72 1.42-.02 2.35.94 3.63.94 1.28 0 2.06-.94 3.68-.9 1.02.03 3.06.4 4.35 2.34-.11.07-2.6 1.5-2.57 4.5.03 3.55 3.14 4.73 3.6 4.94z" />
-    </svg>
-  );
-}
-
+// Apple sign-in was removed — it requires a paid ($99/year) Apple Developer
+// account, which wasn't worth it just for a second OAuth button alongside
+// Google + email/password. Re-adding it later is just restoring this list
+// and the AppleIcon/provider entry (see git history on this file).
 const PROVIDERS: { id: Provider; label: string; icon: () => React.ReactElement }[] = [
   { id: "google", label: "Continue with Google", icon: GoogleIcon },
-  { id: "apple", label: "Continue with Apple", icon: AppleIcon },
 ];
 
 export function OAuthButtons() {
