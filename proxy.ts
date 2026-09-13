@@ -2,11 +2,26 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
+// The old Vercel-provided URL, now superseded by the custom domain. Redirect
+// it (not other *.vercel.app hosts — that would break preview deployments)
+// so search engines consolidate ranking onto one canonical URL instead of
+// treating the two as duplicate content.
+const LEGACY_HOST = "skywatch-vb.vercel.app";
+const CANONICAL_HOST = "skywatchvb.org";
+
 // Refreshes the Supabase auth session on every request. Without this,
 // sessions can expire mid-visit — the browser client alone doesn't get a
 // chance to refresh tokens for server-rendered pages. Standard @supabase/ssr
 // pattern for the Next.js App Router.
 export async function proxy(request: NextRequest) {
+  if (request.nextUrl.hostname === LEGACY_HOST) {
+    const url = request.nextUrl.clone();
+    url.hostname = CANONICAL_HOST;
+    url.protocol = "https:";
+    url.port = "";
+    return NextResponse.redirect(url, 308);
+  }
+
   const response = NextResponse.next({ request });
 
   if (!isSupabaseConfigured()) {
