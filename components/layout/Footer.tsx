@@ -32,7 +32,7 @@ export function Footer() {
         <div className="mt-6 flex items-center gap-3 border-t border-ocean-100 pt-5 dark:border-ocean-600">
           <Logo className="h-6 w-6" />
           <p className="text-sm font-medium text-ocean-700 dark:text-sand-100">
-            Designed &amp; built by Shrihan
+            Designed &amp; built by Shrihan Mishra
             <span className="text-ocean-500 dark:text-sand-300"> — a student in Virginia Beach who thinks his city deserves better flood tools.</span>
           </p>
         </div>
