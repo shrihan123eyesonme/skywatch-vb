@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
 
 export function Footer() {
   return (
@@ -28,6 +29,13 @@ export function Footer() {
         <p className="mt-4 text-xs text-ocean-600 dark:text-sand-300">
           Flood data from NOAA and the National Weather Service. Built for Virginia Beach, VA.
         </p>
+        <div className="mt-6 flex items-center gap-3 border-t border-ocean-100 pt-5 dark:border-ocean-600">
+          <Logo className="h-6 w-6" />
+          <p className="text-sm font-medium text-ocean-700 dark:text-sand-100">
+            Designed &amp; built by Shrihan
+            <span className="text-ocean-500 dark:text-sand-300"> — a student in Virginia Beach who thinks his city deserves better flood tools.</span>
+          </p>
+        </div>
       </div>
     </footer>
   );

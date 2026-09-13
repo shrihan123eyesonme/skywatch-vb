@@ -29,6 +29,8 @@ export const metadata: Metadata = {
     template: "%s | Skywatch VB",
   },
   description: DESCRIPTION,
+  authors: [{ name: "Shrihan" }],
+  creator: "Shrihan",
   keywords: [
     "Virginia Beach flooding",
     "Virginia Beach flood risk",
@@ -66,6 +68,10 @@ const JSON_LD = {
   name: "Skywatch VB",
   url: SITE_URL,
   description: DESCRIPTION,
+  author: {
+    "@type": "Person",
+    name: "Shrihan",
+  },
 };
 
 export default function RootLayout({
