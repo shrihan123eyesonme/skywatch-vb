@@ -14,7 +14,13 @@ const CANONICAL_HOST = "skywatchvb.org";
 // chance to refresh tokens for server-rendered pages. Standard @supabase/ssr
 // pattern for the Next.js App Router.
 export async function proxy(request: NextRequest) {
-  if (request.nextUrl.hostname === LEGACY_HOST) {
+  // Google's ownership-verification file for the old property must keep
+  // resolving directly on the legacy host, unredirected — otherwise Search
+  // Console's periodic reverification fails and the old property loses its
+  // verified status, which would block using its Change of Address tool.
+  const isVerificationFile = /^\/google[a-f0-9]+\.html$/.test(request.nextUrl.pathname);
+
+  if (request.nextUrl.hostname === LEGACY_HOST && !isVerificationFile) {
     const url = request.nextUrl.clone();
     url.hostname = CANONICAL_HOST;
     url.protocol = "https:";
