@@ -71,6 +71,11 @@ const JSON_LD = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Skywatch VB",
+  // Tells search engines "skywatchvb" (no space, matching the domain) is
+  // the same entity as "Skywatch VB" — the standard schema.org property
+  // for this, not a hack. Doesn't force Google's spell-correction to
+  // change instantly, but it's real signal that accumulates over time.
+  alternateName: "SkywatchVB",
   url: SITE_URL,
   description: DESCRIPTION,
   author: {

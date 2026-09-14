@@ -36,6 +36,12 @@ export function Footer() {
             <span className="text-ocean-500 dark:text-sand-300"> — a student in Virginia Beach who thinks his city deserves better flood tools.</span>
           </p>
         </div>
+        <p className="mt-4 text-xs text-ocean-500 dark:text-sand-300">
+          &copy; {new Date().getFullYear()}{" "}
+          <Link href="/" className="underline">
+            skywatchvb.org
+          </Link>
+        </p>
       </div>
     </footer>
   );
